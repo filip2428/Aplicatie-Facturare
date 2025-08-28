@@ -6,10 +6,10 @@ import { createUser, type CreateUserState } from "../actions";
 import { useActionState } from "react";
 
 export default function CreateUserPage() {
-  const [state, formAction] = useActionState<CreateUserState, FormData>(
-    createUser,
-    {}
-  );
+  const [state, formAction, isPending] = useActionState<
+    CreateUserState,
+    FormData
+  >(createUser, {});
 
   return (
     <>
@@ -44,7 +44,13 @@ export default function CreateUserPage() {
         <div className="text-right">
           <button
             type="submit"
-            className="border-1 mt-2 px-4 py-2 rounded bg-red-800 hover:bg-red-900 text-white align-right"
+            className={`mt-2 px-4 py-2 rounded text-white border 
+    ${
+      isPending
+        ? "bg-gray-500 cursor-not-allowed opacity-70"
+        : "bg-red-800 hover:bg-red-900"
+    }`}
+            disabled={isPending}
           >
             Add User
           </button>
