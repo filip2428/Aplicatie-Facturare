@@ -15,9 +15,8 @@ export default async function LoginPage({
   searchParams: SP;
 }) {
   const session = await getServerSession(authOptions);
-  if (session) redirect("/"); // deja logat
+  if (session) redirect("/");
 
-  // 👇 Next 15: trebuie să aștepți searchParams
   const sp = await searchParams;
   const error = Array.isArray(sp.error) ? sp.error[0] : sp.error;
   const callbackUrl =

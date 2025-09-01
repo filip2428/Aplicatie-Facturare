@@ -5,7 +5,11 @@ import { prisma } from "@/lib/prisma";
 import { compare } from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
-  session: { strategy: "jwt" }, // nu scriem sesiuni în DB; folosim JWT
+  session: { strategy: "jwt" },
+
+  jwt: {
+    maxAge: 60 * 60 * 24,
+  },
 
   providers: [
     Credentials({
@@ -19,7 +23,6 @@ export const authOptions: NextAuthOptions = {
         const password = (creds?.password ?? "").toString();
         if (!email || !password) return null;
 
-        // include explicit passwordHash ca să fie tipul corect
         const user = await prisma.admin.findUnique({
           where: { email },
           select: { id: true, email: true, name: true, passwordHash: true },
@@ -29,7 +32,6 @@ export const authOptions: NextAuthOptions = {
         const ok = await compare(password, user.passwordHash);
         if (!ok) return null;
 
-        // Minim pentru JWT & session
         return { id: user.id, email: user.email, name: user.name ?? null };
       },
     }),
@@ -37,17 +39,17 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.id = (user as any).id; // atașăm id-ul în JWT la login
+      if (user) token.id = (user as any).id;
       return token;
     },
     async session({ session, token }) {
-      if (session.user && token?.id) (session.user as any).id = token.id; // expunem id în session.user.id
+      if (session.user && token?.id) (session.user as any).id = token.id;
       return session;
     },
   },
 
   pages: {
-    signIn: "/login", // pagina ta de login din App Router
+    signIn: "/login",
   },
 
   secret: process.env.NEXTAUTH_SECRET,

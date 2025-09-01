@@ -1,6 +1,13 @@
 import Header from "@/components/Header";
 import GhostButton from "@/components/GhostButton";
-export default function UsersPage() {
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
+
+export default async function UsersPage() {
+  const session = await getServerSession(authOptions);
+  if (!session) redirect("/login");
+
   return (
     <>
       <Header />

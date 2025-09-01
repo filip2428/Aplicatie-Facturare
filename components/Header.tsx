@@ -6,6 +6,12 @@ import BlackLogo from "../public/logo.svg";
 import ActiveLink from "./ActiveLink";
 import { useSession, signOut } from "next-auth/react";
 
+// Funcție pentru formatarea numelui
+function formatName(name?: string | null) {
+  if (!name) return "";
+  return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+}
+
 export default function Header() {
   const { data: session } = useSession();
 
@@ -26,6 +32,14 @@ export default function Header() {
         </Link>
 
         <nav className="flex items-center gap-6 text-xl py-2">
+          {session?.user?.name && (
+            <span
+              className="px-3 py-1 rounded bg-neutral-900/80 text-white font-semibold text-base shadow-sm"
+              style={{ letterSpacing: "0.5px" }}
+            >
+              Hello, {formatName(session.user.name)}
+            </span>
+          )}
           <ActiveLink href="/users">Users</ActiveLink>
           <ActiveLink href="/customers">Customers</ActiveLink>
           <ActiveLink href="/invoices">Invoices</ActiveLink>

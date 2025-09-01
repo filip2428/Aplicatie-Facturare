@@ -15,10 +15,12 @@ type Search = {
 export default async function UsersPage({
   searchParams,
 }: {
-  searchParams: Search;
+  searchParams: Promise<Search>;
 }) {
-  const q = (searchParams.q ?? "").trim();
-  const sort = (searchParams.sort ?? "newest") as Search["sort"];
+  const params = await searchParams;
+
+  const q = (params.q ?? "").trim();
+  const sort = (params.sort ?? "newest") as Search["sort"];
   const where = q
     ? {
         OR: [
