@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { NextAuthProvider } from "./providers/SessionProvider";
 
 export const metadata: Metadata = {
   title: "EasyInvoice",
@@ -14,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="ro">
       <body className="min-h-screen bg-gradient-to-br from-neutral-800 via-neutral-900 to-red-800 text-white">
-        {children}
+        <NextAuthProvider>{children}</NextAuthProvider>
       </body>
     </html>
   );
