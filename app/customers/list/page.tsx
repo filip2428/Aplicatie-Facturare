@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import Header from "@/components/Header";
-// import { deleteUser, editUser, type EditUserState } from "../actions";
 import { deleteCustomer } from "../actions";
 import DeleteDialog from "@/components/DeleteDialog";
 import EditDialogCustomer from "@/components/EditDialogCustomer";
