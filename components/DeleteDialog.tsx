@@ -12,7 +12,7 @@ import {
 
 type DeleteDialogProps = {
   formId?: string;
-  inputType?: "User" | "Customer";
+  inputType?: "User" | "Customer" | "Invoice";
 };
 
 export default function DeleteDialog({

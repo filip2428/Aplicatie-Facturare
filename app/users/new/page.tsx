@@ -15,7 +15,7 @@ export default function CreateUserPage() {
     <>
       <Header />
       <h1 className="text-center text-4xl font-extrabold tracking-tight py-10">
-        Create User Page
+        Create User
       </h1>
       <form
         action={formAction}
@@ -44,15 +44,12 @@ export default function CreateUserPage() {
         <div className="text-right">
           <button
             type="submit"
-            className={`mt-2 px-4 py-2 rounded text-white border 
-    ${
-      isPending
-        ? "bg-gray-500 cursor-not-allowed opacity-70"
-        : "bg-red-800 hover:bg-red-900"
-    }`}
+            className={`border-1 mt-2 px-4 py-2 rounded bg-red-800 hover:bg-red-900 text-white align-right ${
+              isPending ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             disabled={isPending}
           >
-            Add User
+            {isPending ? "Creating..." : "Create User"}
           </button>
         </div>
       </form>

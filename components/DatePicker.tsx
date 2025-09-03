@@ -2,32 +2,33 @@
 
 import * as React from "react";
 import { ChevronDownIcon } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import type { ClassNames } from "react-day-picker";
 
-export default function DatePicker() {
+export default function DatePicker({ defaultDate }: { defaultDate?: Date }) {
   const [open, setOpen] = React.useState(false);
   const [date, setDate] = React.useState<Date | undefined>(undefined);
   const today = new Date();
-  const todayStart = new Date(
+  const tommorow = new Date();
+  tommorow.setDate(tommorow.getDate() + 1);
+  // const todayStart = new Date(
+  //   today.getFullYear(),
+  //   today.getMonth(),
+  //   today.getDate()
+  // );
+  const tommorowStart = new Date(
     today.getFullYear(),
     today.getMonth(),
-    today.getDate()
+    today.getDate() + 1
   );
 
   return (
     <div className="flex flex-col gap-3">
-      {/* <Label htmlFor="date" className="px-1">
-        Date of birth
-      </Label> */}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -56,9 +57,11 @@ export default function DatePicker() {
               setOpen(false);
             }}
             captionLayout="dropdown"
-            startMonth={new Date(today.getFullYear(), today.getMonth(), 1)}
+            startMonth={
+              new Date(tommorow.getFullYear(), tommorow.getMonth(), 1)
+            }
             endMonth={new Date(2035, 0)}
-            disabled={{ before: todayStart }}
+            disabled={{ before: tommorowStart }}
             className="rounded-md border border-neutral-800 bg-neutral-900"
             classNames={{
               caption_label: "hidden",
@@ -73,6 +76,17 @@ export default function DatePicker() {
           />
         </PopoverContent>
       </Popover>
+      <input
+        type="hidden"
+        name="date"
+        value={
+          date
+            ? date.toLocaleDateString("en-CA")
+            : defaultDate
+            ? defaultDate.toLocaleDateString("en-CA")
+            : ""
+        }
+      />
     </div>
   );
 }

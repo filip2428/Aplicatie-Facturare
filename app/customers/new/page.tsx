@@ -1,12 +1,11 @@
 "use client";
 
 import Header from "@/components/Header";
-import NewUserForm from "@/components/NewUserForm";
 import { Input } from "@/components/ui/input";
 import { useActionState } from "react";
 import { createCustomer, type CreateCustomerState } from "../actions";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { XCircle, AlertTriangle, X, CheckCircle2Icon } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 
 export default function CustomersNewPage() {
   const [state, formAction, isPending] = useActionState<
@@ -76,38 +75,37 @@ export default function CustomersNewPage() {
         <div className="text-right">
           <button
             type="submit"
-            className={`mt-2 px-4 py-2 rounded text-white border 
-    ${
-      isPending
-        ? "bg-gray-500 cursor-not-allowed opacity-70"
-        : "bg-red-800 hover:bg-red-900"
-    }`}
+            className={`border-1 mt-2 px-4 py-2 rounded bg-red-800 hover:bg-red-900 text-white align-right ${
+              isPending ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             disabled={isPending}
           >
-            Add Customer
+            {isPending ? "Creating..." : "Create Customer"}
           </button>
         </div>
       </form>
       {state.error && (
-        <Alert
-          variant="destructive"
-          className="
-    inline-flex w-fit max-w-md mx-auto
-    items-start gap-3 border-l-4 border-red-500/80
-    bg-red-950/40 text-red-200 ring-1 ring-inset ring-red-400/20
-    backdrop-blur-sm shadow-lg shadow-red-900/20
-    animate-in fade-in-50 slide-in-from-top-2
-    break-words center
-  "
-        >
-          <AlertTriangle />
-          <div>
-            <AlertTitle className="text-red-100">Heads up!</AlertTitle>
-            <AlertDescription className="text-red-200/90">
-              {state.error}
-            </AlertDescription>
-          </div>
-        </Alert>
+        <div className="fixed left-1/2 bottom-16 z-50 translate-x-[-50%]">
+          <Alert
+            variant="destructive"
+            className="
+        inline-flex w-fit max-w-md
+        items-start gap-3 border-l-4 border-red-500/80
+        bg-red-950/40 text-red-200 ring-1 ring-inset ring-red-400/20
+        backdrop-blur-sm shadow-lg shadow-red-900/20
+        animate-in fade-in-50 slide-in-from-top-2
+        break-words center
+      "
+          >
+            <AlertTriangle />
+            <div>
+              <AlertTitle className="text-red-100">Heads up!</AlertTitle>
+              <AlertDescription className="text-red-200/90">
+                {state.error}
+              </AlertDescription>
+            </div>
+          </Alert>
+        </div>
       )}
     </>
   );

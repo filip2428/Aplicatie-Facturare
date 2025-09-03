@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-// import { useFormState } from "react-dom";
 import { useEffect, useState, useActionState } from "react";
 import { editUser, EditUserState } from "../app/users/actions";
 
@@ -37,10 +36,10 @@ function EditForm({
   userEmail: string;
   onSuccess: () => void;
 }) {
-  const [state, formAction] = useActionState<EditUserState, FormData>(
-    editUser,
-    initialState
-  );
+  const [state, formAction, isPending] = useActionState<
+    EditUserState,
+    FormData
+  >(editUser, initialState);
 
   useEffect(() => {
     if (state.ok) onSuccess();
@@ -76,9 +75,12 @@ function EditForm({
           </DialogClose>
           <Button
             type="submit"
-            className="bg-green-700 hover:bg-green-800 mt-2"
+            className={`bg-green-700 hover:bg-green-800 mt-2 ${
+              isPending ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={isPending}
           >
-            Save Changes
+            {isPending ? "Saving..." : "Save changes"}
           </Button>
         </DialogFooter>
       </form>

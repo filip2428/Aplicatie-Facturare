@@ -14,41 +14,32 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState, useActionState } from "react";
-import { editCustomer, EditCustomerState } from "../app/customers/actions";
+import { editInvoice, EditInvoiceState } from "../app/invoices/actions";
+import DatePicker from "./DatePicker";
 
 type EditDialogProps = {
-  formId?: string;
-  customerId: string;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-  customerAddress: string;
-  customerCif: string;
+  invoiceId: string;
+  invoiceTotal: number;
+  invoiceDueDate: Date;
 };
 
-const initialState: EditCustomerState = { error: undefined, ok: false };
+const initialState: EditInvoiceState = { error: undefined, ok: false };
 
 function EditForm({
-  customerId,
-  customerName,
-  customerEmail,
-  customerPhone,
-  customerAddress,
-  customerCif,
+  invoiceId,
+  invoiceTotal,
+  invoiceDueDate,
   onSuccess,
 }: {
-  customerId: string;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-  customerAddress: string;
-  customerCif: string;
+  invoiceId: string;
+  invoiceTotal: number;
+  invoiceDueDate: Date;
   onSuccess: () => void;
 }) {
   const [state, formAction, isPending] = useActionState<
-    EditCustomerState,
+    EditInvoiceState,
     FormData
-  >(editCustomer, initialState);
+  >(editInvoice, initialState);
 
   useEffect(() => {
     if (state.ok) onSuccess();
@@ -58,51 +49,27 @@ function EditForm({
     <>
       <form action={formAction} className="mt-4">
         <div className="grid gap-4">
-          <input type="hidden" name="id" value={customerId} />
+          <input type="hidden" name="id" value={invoiceId} />
           <div className="grid gap-3">
-            <Label htmlFor="name-1">Name</Label>
+            <Label htmlFor="name-1">Total</Label>
             <Input
               id="name-1"
-              name="name"
-              defaultValue={customerName}
+              name="total"
+              type="number"
+              defaultValue={invoiceTotal}
+              min={0}
               required
             />
           </div>
           <div className="grid gap-3">
-            <Label htmlFor="username-1">Email</Label>
-            <Input
+            <Label htmlFor="username-1">Invoice Due Date</Label>
+            {/* <Input
               id="username-1"
-              name="email"
-              defaultValue={customerEmail}
+              name="dueDate"
+              defaultValue={invoiceDueDate.toISOString().split("T")[0]}
               required
-            />
-          </div>
-          <div className="grid gap-3">
-            <Label htmlFor="username-1">Phone number</Label>
-            <Input
-              id="username-1"
-              name="phone"
-              defaultValue={customerPhone}
-              required
-            />
-          </div>
-          <div className="grid gap-3">
-            <Label htmlFor="username-1">Address</Label>
-            <Input
-              id="username-1"
-              name="address"
-              defaultValue={customerAddress}
-              required
-            />
-          </div>
-          <div className="grid gap-3">
-            <Label htmlFor="username-1">CIF</Label>
-            <Input
-              id="username-1"
-              name="cif"
-              defaultValue={customerCif}
-              required
-            />
+            /> */}
+            <DatePicker defaultDate={invoiceDueDate} />
           </div>
         </div>
         <DialogFooter>
@@ -134,14 +101,10 @@ function EditForm({
   );
 }
 
-export default function EditDialogCustomer({
-  formId,
-  customerId,
-  customerName,
-  customerEmail,
-  customerPhone,
-  customerAddress,
-  customerCif,
+export default function EditDialogInvoice({
+  invoiceId,
+  invoiceTotal,
+  invoiceDueDate,
 }: EditDialogProps) {
   const [open, setOpen] = useState(false);
   const [formKey, setFormKey] = useState(0);
@@ -165,12 +128,9 @@ export default function EditDialogCustomer({
         </DialogHeader>
         {open && (
           <EditForm
-            customerId={customerId}
-            customerName={customerName}
-            customerEmail={customerEmail}
-            customerAddress={customerAddress}
-            customerCif={customerCif}
-            customerPhone={customerPhone}
+            invoiceId={invoiceId}
+            invoiceTotal={invoiceTotal}
+            invoiceDueDate={invoiceDueDate}
             onSuccess={handleSuccess}
           />
         )}
