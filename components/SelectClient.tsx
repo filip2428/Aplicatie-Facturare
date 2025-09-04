@@ -7,14 +7,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 export default function SelectClient({
   customers,
+  onChange,
 }: {
   customers: Array<{ id: string; name: string; email: string }>;
+  onChange?: (customerId: string) => void;
 }) {
   return (
-    <Select name="customer" required>
+    <Select name="customer" required onValueChange={onChange}>
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="Select a customer" />
       </SelectTrigger>

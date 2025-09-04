@@ -20,14 +20,6 @@ export default async function UsersPage({
 
   const q = (params.q ?? "").trim();
   const sort = (params.sort ?? "newest") as Search["sort"];
-  //   const where = q
-  //     ? {
-  //         OR: [
-  //           { name: { startsWith: q, mode: "insensitive" as const } },
-  //           { email: { startsWith: q, mode: "insensitive" as const } },
-  //         ],
-  //       }
-  //     : undefined;
 
   const orderBy =
     sort === "oldest"
@@ -44,7 +36,6 @@ export default async function UsersPage({
       ? [{ dueDate: "desc" as const }]
       : { createdAt: "desc" as const };
 
-  //   const invoices = await prisma.invoice.findMany({ where, orderBy });
   const invoices = await prisma.invoice.findMany({
     orderBy,
   });
@@ -68,6 +59,19 @@ export default async function UsersPage({
                   phone: true,
                 },
               });
+              const today = new Date();
+              const dueDate = invoice.dueDate;
+              let dueColor = "text-green-400";
+              if (dueDate < today) {
+                dueColor = "text-red-500";
+              } else {
+                const diffDays =
+                  (dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
+                if (diffDays <= 7) {
+                  dueColor = "text-orange-400";
+                }
+              }
+
               return (
                 <li
                   key={invoice.id}
@@ -77,19 +81,12 @@ export default async function UsersPage({
                     <div className="font-semibold">{customer?.name}</div>
                     <div className="text-sm text-gray-300">
                       {invoice.total} | {invoice.status} |{" Due: "}
-                      {invoice.dueDate.toDateString()}
+                      <span className={dueColor}>
+                        {invoice.dueDate.toDateString()}
+                      </span>
                     </div>
                   </div>
                   <div className="flex space-x-2">
-                    {/* <EditDialogCustomer
-                    formId={`edit-user-form-${invoice.id}`}
-                    customerName={invoice.name ?? ""}
-                    customerEmail={invoice.email ?? ""}
-                    customerId={invoice.id ?? ""}
-                    customerAddress={invoice.address ?? ""}
-                    customerCif={invoice.cif ?? ""}
-                    customerPhone={invoice.phone ?? ""}
-                  /> */}
                     <EditDialogInvoice
                       invoiceId={invoice.id}
                       invoiceTotal={invoice.total}

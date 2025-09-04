@@ -6,7 +6,6 @@ import BlackLogo from "../public/logo.svg";
 import ActiveLink from "./ActiveLink";
 import { useSession, signOut } from "next-auth/react";
 
-// Funcție pentru formatarea numelui
 function formatName(name?: string | null) {
   if (!name) return "";
   return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
