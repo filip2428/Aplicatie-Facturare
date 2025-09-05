@@ -14,56 +14,61 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState, useActionState } from "react";
-import { editInvoice, EditInvoiceState } from "../app/invoices/actions";
-import DatePicker from "./DatePicker";
+import {
+  partialPayInvoice,
+  PartialPayInvoiceState,
+} from "../app/payments/actions";
 
-type EditDialogProps = {
+type PartialPayDialogProps = {
+  formId?: string;
   invoiceId: string;
-  invoiceTotal: number;
-  invoiceDueDate: Date;
+  maxAmount: number;
+  amountPaid: number;
 };
 
-const initialState: EditInvoiceState = { error: undefined, ok: false };
+const initialState: PartialPayInvoiceState = { error: undefined, ok: false };
 
-function EditForm({
+function PartialPayForm({
   invoiceId,
-  invoiceTotal,
-  invoiceDueDate,
+  maxAmount,
   onSuccess,
 }: {
   invoiceId: string;
-  invoiceTotal: number;
-  invoiceDueDate: Date;
+  maxAmount: number;
   onSuccess: () => void;
 }) {
+  const [amount, setAmount] = useState("");
   const [state, formAction, isPending] = useActionState<
-    EditInvoiceState,
+    PartialPayInvoiceState,
     FormData
-  >(editInvoice, initialState);
+  >(partialPayInvoice, initialState);
 
   useEffect(() => {
     if (state.ok) onSuccess();
   }, [state.ok, onSuccess]);
 
+  const validAmount =
+    !!amount && Number(amount) > 0 && Number(amount) <= maxAmount;
+
   return (
     <>
       <form action={formAction} className="mt-4">
+        <input type="hidden" name="invoiceId" value={invoiceId} />
         <div className="grid gap-4">
-          <input type="hidden" name="id" value={invoiceId} />
           <div className="grid gap-3">
-            <Label htmlFor="name-1">Total</Label>
+            <Label htmlFor="amount">Amount to pay (max {maxAmount})</Label>
             <Input
-              id="name-1"
-              name="total"
+              id="amount"
+              name="amount"
               type="number"
-              defaultValue={invoiceTotal}
-              min={0}
+              min="0.01"
+              max={maxAmount}
+              step="0.01"
               required
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder={`Max: ${maxAmount}`}
             />
-          </div>
-          <div className="grid gap-3">
-            <Label htmlFor="username-1">Invoice Due Date</Label>
-            <DatePicker defaultDate={invoiceDueDate} />
           </div>
         </div>
         <DialogFooter>
@@ -80,9 +85,9 @@ function EditForm({
             className={`bg-green-700 hover:bg-green-800 mt-2 ${
               isPending ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            disabled={isPending}
+            disabled={isPending || !validAmount}
           >
-            {isPending ? "Saving..." : "Save changes"}
+            {isPending ? "Paying..." : "Pay"}
           </Button>
         </DialogFooter>
       </form>
@@ -95,11 +100,12 @@ function EditForm({
   );
 }
 
-export default function EditDialogInvoice({
+export default function PartialPayDialog({
+  formId,
   invoiceId,
-  invoiceTotal,
-  invoiceDueDate,
-}: EditDialogProps) {
+  maxAmount,
+  amountPaid,
+}: PartialPayDialogProps) {
   const [open, setOpen] = useState(false);
   const [formKey, setFormKey] = useState(0);
 
@@ -111,20 +117,20 @@ export default function EditDialogInvoice({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="secondary">Edit</Button>
+        <Button variant="secondary">Partial Pay</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] bg-neutral-900">
         <DialogHeader>
-          <DialogTitle>Edit Invoice</DialogTitle>
+          <DialogTitle>Partial Pay Invoice</DialogTitle>
           <DialogDescription>
-            Make changes to your profile here. Click save when you&apos;re done.
+            Enter an amount to pay (max {maxAmount}). Amount paid so far:{" "}
+            {amountPaid}
           </DialogDescription>
         </DialogHeader>
         {open && (
-          <EditForm
+          <PartialPayForm
             invoiceId={invoiceId}
-            invoiceTotal={invoiceTotal}
-            invoiceDueDate={invoiceDueDate}
+            maxAmount={maxAmount}
             onSuccess={handleSuccess}
           />
         )}

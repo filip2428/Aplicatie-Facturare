@@ -78,7 +78,17 @@ export default async function UsersPage({
                   className="flex items-center justify-between rounded bg-neutral-900/60 p-3 mx-3 my-3"
                 >
                   <div>
-                    <div className="font-semibold">{customer?.name}</div>
+                    <div
+                      className={`font-semibold ${
+                        invoice.status === "PAID"
+                          ? "text-green-400"
+                          : invoice.status === "PARTIALLY_PAID"
+                          ? "text-yellow-400"
+                          : "text-white"
+                      }`}
+                    >
+                      {customer?.name} | {invoice.number}
+                    </div>
                     <div className="text-sm text-gray-300">
                       {invoice.total} | {invoice.status} |{" Due: "}
                       <span className={dueColor}>

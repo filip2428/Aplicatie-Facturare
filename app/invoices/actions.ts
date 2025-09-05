@@ -70,11 +70,21 @@ export async function editInvoice(
       throw new Error("Amount must be a valid number.");
     }
 
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: String(data.get("id") ?? "").trim() },
+    });
+    if (!invoice) throw new Error("Invoice not found.");
     await prisma.invoice.update({
       where: { id: String(data.get("id") ?? "").trim() },
       data: {
         total,
         dueDate: new Date(dueDate),
+        status:
+          total > invoice.amountPaid!
+            ? invoice.amountPaid === total
+              ? "PAID"
+              : "PARTIALLY_PAID"
+            : "UNPAID",
       },
     });
     revalidatePath("/invoices");

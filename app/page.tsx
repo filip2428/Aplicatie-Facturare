@@ -2,6 +2,8 @@ import Header from "../components/Header";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import Dashboard from "@/components/Dashboard";
+import { SectionCards } from "@/components/section-cards";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -14,6 +16,8 @@ export default async function DashboardPage() {
         <br />
         <span className="text-white">Our responsibility</span>
       </h1>
+      {/* <Dashboard /> */}
+      <SectionCards />
     </>
   );
 }
