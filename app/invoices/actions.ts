@@ -32,6 +32,7 @@ export async function createInvoice(
         total: amount,
         dueDate: new Date(dueDate),
         number: `INV-${Date.now()}`,
+        status: "UNPAID",
       },
     });
   } catch (error) {
@@ -80,10 +81,10 @@ export async function editInvoice(
         total,
         dueDate: new Date(dueDate),
         status:
-          total > invoice.amountPaid!
-            ? invoice.amountPaid === total
-              ? "PAID"
-              : "PARTIALLY_PAID"
+          invoice.amountPaid === total
+            ? "PAID"
+            : invoice.amountPaid > 0
+            ? "PARTIALLY_PAID"
             : "UNPAID",
       },
     });
