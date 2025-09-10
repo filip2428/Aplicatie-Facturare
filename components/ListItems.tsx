@@ -32,12 +32,11 @@ export default function ListItems({ users }: ListItemsProps) {
                 <form
                   action={deleteUser.bind(null, user.id)}
                   id={`delete-user-form-${user.id}`}
-                >
-                  <DeleteDialog
-                    formId={`delete-user-form-${user.id}`}
-                    inputType="User"
-                  />
-                </form>
+                />
+                <DeleteDialog
+                  formId={`delete-user-form-${user.id}`}
+                  inputType="User"
+                />
               </div>
             </li>
           ))}

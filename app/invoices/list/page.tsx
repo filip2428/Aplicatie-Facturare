@@ -90,7 +90,9 @@ export default async function UsersPage({
                       {customer?.name} | {invoice.number}
                     </div>
                     <div className="text-sm text-gray-300">
-                      {invoice.total} | {invoice.status} |{" Due: "}
+                      {invoice.total} | {invoice.status}{" "}
+                      {invoice.amountPaid ? `- ${invoice.amountPaid}` : ""} |
+                      {" Due: "}
                       <span className={dueColor}>
                         {invoice.dueDate.toDateString()}
                       </span>

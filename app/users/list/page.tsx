@@ -11,12 +11,10 @@ type Search = {
 export default async function UsersPage({
   searchParams,
 }: {
-  searchParams: Promise<Search>;
+  searchParams: Search;
 }) {
-  const params = await searchParams;
-
-  const q = (params.q ?? "").trim();
-  const sort = (params.sort ?? "newest") as Search["sort"];
+  const q = (searchParams.q ?? "").trim();
+  const sort = (searchParams.sort ?? "newest") as Search["sort"];
 
   const where = q
     ? {
@@ -29,14 +27,20 @@ export default async function UsersPage({
 
   const orderBy =
     sort === "oldest"
-      ? { createdAt: "asc" as const }
+      ? [{ createdAt: "asc" as const }, { id: "asc" as const }]
       : sort === "newest"
-      ? { createdAt: "desc" as const }
+      ? [{ createdAt: "desc" as const }, { id: "desc" as const }]
       : sort === "az"
-      ? [{ name: "asc" as const }, { email: "asc" as const }]
-      : sort === "za"
-      ? [{ name: "desc" as const }, { email: "desc" as const }]
-      : { createdAt: "desc" as const };
+      ? [
+          { name: "asc" as const },
+          { email: "asc" as const },
+          { id: "asc" as const },
+        ]
+      : [
+          { name: "desc" as const },
+          { email: "desc" as const },
+          { id: "desc" as const },
+        ];
 
   const users = await prisma.user.findMany({ where, orderBy });
 

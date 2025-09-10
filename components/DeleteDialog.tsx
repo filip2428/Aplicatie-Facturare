@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,6 +21,11 @@ export default function DeleteDialog({
   formId,
   inputType = "User",
 }: DeleteDialogProps) {
+  const handleConfirm = () => {
+    if (!formId) return;
+    const form = document.getElementById(formId) as HTMLFormElement | null;
+    form?.requestSubmit();
+  };
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -46,7 +53,8 @@ export default function DeleteDialog({
           <Button
             type="submit"
             className="bg-red-700 hover:bg-red-800"
-            form={formId}
+            // form={formId}
+            onClick={handleConfirm}
           >
             Delete {inputType}
           </Button>
