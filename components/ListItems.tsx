@@ -9,7 +9,7 @@ type ListItemsProps = { users: User[] };
 export default function ListItems({ users }: ListItemsProps) {
   return (
     <div className="space-y-3 pt-10 px-5 max-w-3xl mx-auto">
-      <ScrollArea className="h-[650px] overflow-hidden rounded-lg border border-white/10 bg-black/20">
+      <ScrollArea className="h-[520px] overflow-hidden rounded-lg border border-white/10 bg-black/20">
         <h1 className="text-2xl font-bold mx-4 my-4">Users</h1>
         <ul className="space-y-2">
           {users.map((user) => (

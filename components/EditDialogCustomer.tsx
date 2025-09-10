@@ -144,11 +144,9 @@ export default function EditDialogCustomer({
   customerCif,
 }: EditDialogProps) {
   const [open, setOpen] = useState(false);
-  const [formKey, setFormKey] = useState(0);
 
   const handleSuccess = () => {
     setOpen(false);
-    setFormKey((k) => k + 1);
   };
 
   return (
