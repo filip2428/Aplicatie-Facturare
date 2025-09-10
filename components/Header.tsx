@@ -5,6 +5,8 @@ import Logo from "../public/whitelogo.svg";
 import BlackLogo from "../public/logo.svg";
 import ActiveLink from "./ActiveLink";
 import { useSession, signOut } from "next-auth/react";
+import { useState } from "react";
+import { InteractiveHoverButton } from "@/components/magicui/interactive-hover-button";
 
 function formatName(name?: string | null) {
   if (!name) return "";
@@ -13,6 +15,7 @@ function formatName(name?: string | null) {
 
 export default function Header() {
   const { data: session } = useSession();
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <header className="bg-transparent backdrop-blur">
@@ -31,14 +34,6 @@ export default function Header() {
         </Link>
 
         <nav className="flex items-center gap-6 text-xl py-2">
-          {session?.user?.name && (
-            <span
-              className="px-3 py-1 rounded bg-neutral-900/80 text-white font-semibold text-base shadow-sm"
-              style={{ letterSpacing: "0.5px" }}
-            >
-              Hello, {formatName(session.user.name)}
-            </span>
-          )}
           <ActiveLink href="/users">Users</ActiveLink>
           <ActiveLink href="/customers">Customers</ActiveLink>
           <ActiveLink href="/invoices">Invoices</ActiveLink>
@@ -46,12 +41,21 @@ export default function Header() {
 
           <div className="ml-6">
             {session ? (
-              <button
+              <InteractiveHoverButton
                 onClick={() => signOut({ callbackUrl: "/login" })}
-                className="rounded bg-neutral-900 px-3 py-1 text-white hover:bg-neutral-800 text-base"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                className="inline-flex min-w-[130px]  gap-2 rounded-full border  bg-white/5 px-4 py-1.5 text-sm text-white/90 hover:bg-rose-500/20 hover:border-rose-500 hover:text-white transition"
               >
-                Logout
-              </button>
+                <span
+                  className={`h-2 w-2 rounded-full transition ${
+                    isHovered ? "bg-rose-400" : "bg-emerald-400"
+                  }`}
+                />
+                {isHovered
+                  ? "Sign Out"
+                  : `Hello, ${formatName(session?.user?.name)}`}
+              </InteractiveHoverButton>
             ) : null}
           </div>
         </nav>

@@ -99,11 +99,13 @@ export default async function UsersPage({
                     </div>
                   </div>
                   <div className="flex space-x-2">
-                    <EditDialogInvoice
-                      invoiceId={invoice.id}
-                      invoiceTotal={invoice.total}
-                      invoiceDueDate={invoice.dueDate}
-                    />
+                    {invoice.status === "UNPAID" && (
+                      <EditDialogInvoice
+                        invoiceId={invoice.id}
+                        invoiceTotal={invoice.total}
+                        invoiceDueDate={invoice.dueDate}
+                      />
+                    )}
                     <form
                       action={deleteInvoice.bind(null, invoice.id)}
                       id={`delete-user-form-${invoice.id}`}

@@ -16,7 +16,6 @@ export default async function DashboardPage() {
         <br />
         <span className="text-white">Our responsibility</span>
       </h1>
-      {/* <Dashboard /> */}
       <SectionCards />
     </>
   );
