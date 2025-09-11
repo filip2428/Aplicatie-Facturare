@@ -85,11 +85,3 @@ export async function editCustomer(
     return { error: `Something went wrong. Please try again. ${error}` };
   }
 }
-
-export async function deleteCustomer(userId: string) {
-  await prisma.customer.delete({
-    where: { id: userId },
-  });
-  revalidatePath("/customers");
-  redirect("/customers/list");
-}

@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
 import { apiDeleteUser } from "@/lib/api/users";
+import { apiDeleteCustomer } from "@/lib/api/customers";
+import { apiDeleteInvoice } from "@/lib/api/invoices";
 
 type DeleteDialogProps = {
   itemId?: string;
@@ -34,6 +36,24 @@ export default function DeleteDialog({
       }
       router.refresh();
       router.push(`/users/list`);
+    }
+    if (inputType === "Customer") {
+      if (!itemId) return;
+      const res = await apiDeleteCustomer({ id: itemId });
+      if (!res.ok) {
+        return;
+      }
+      router.refresh();
+      router.push(`/customers/list`);
+    }
+    if (inputType === "Invoice") {
+      if (!itemId) return;
+      const res = await apiDeleteInvoice({ id: itemId });
+      if (!res.ok) {
+        return;
+      }
+      router.refresh();
+      router.push(`/invoices/list`);
     }
   }
   return (
@@ -63,7 +83,6 @@ export default function DeleteDialog({
           <Button
             type="submit"
             className="bg-red-700 hover:bg-red-800"
-            // form={formId}
             onClick={handleConfirm}
           >
             Delete {inputType}

@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import Header from "@/components/Header";
-import { deleteInvoice } from "../actions";
 import DeleteDialog from "@/components/DeleteDialog";
 import { ScrollBar, ScrollArea } from "@/components/ui/scroll-area";
 import SortInvoiceForm from "@/app/invoices/list/components/SortInvoicesForm";
@@ -106,15 +105,7 @@ export default async function UsersPage({
                         invoiceDueDate={invoice.dueDate}
                       />
                     )}
-                    <form
-                      action={deleteInvoice.bind(null, invoice.id)}
-                      id={`delete-user-form-${invoice.id}`}
-                    >
-                      <DeleteDialog
-                        formId={`delete-user-form-${invoice.id}`}
-                        inputType="Invoice"
-                      />
-                    </form>
+                    <DeleteDialog inputType="Invoice" itemId={invoice.id} />
                   </div>
                 </li>
               );

@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import Header from "@/components/Header";
-import { deleteCustomer } from "../actions";
 import DeleteDialog from "@/components/DeleteDialog";
 import EditDialogCustomer from "@/app/customers/list/components/EditDialogCustomer";
 import { ScrollBar, ScrollArea } from "@/components/ui/scroll-area";
@@ -69,15 +68,7 @@ export default async function UsersPage({
                     customerCif={customer.cif ?? ""}
                     customerPhone={customer.phone ?? ""}
                   />
-                  <form
-                    action={deleteCustomer.bind(null, customer.id)}
-                    id={`delete-user-form-${customer.id}`}
-                  >
-                    <DeleteDialog
-                      formId={`delete-user-form-${customer.id}`}
-                      inputType="Customer"
-                    />
-                  </form>
+                  <DeleteDialog inputType="Customer" itemId={customer.id} />
                 </div>
               </li>
             ))}

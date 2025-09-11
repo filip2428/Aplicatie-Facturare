@@ -10,17 +10,18 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-export default function DatePicker({ defaultDate }: { defaultDate?: Date }) {
+type Props = {
+  value: Date;
+  onChange: (date: Date) => void;
+  defaultDate?: Date;
+};
+
+export default function DatePicker({ defaultDate, value, onChange }: Props) {
   const [open, setOpen] = React.useState(false);
-  const [date, setDate] = React.useState<Date | undefined>(undefined);
   const today = new Date();
   const tommorow = new Date();
   tommorow.setDate(tommorow.getDate() + 1);
-  // const todayStart = new Date(
-  //   today.getFullYear(),
-  //   today.getMonth(),
-  //   today.getDate()
-  // );
+
   const tommorowStart = new Date(
     today.getFullYear(),
     today.getMonth(),
@@ -38,7 +39,7 @@ export default function DatePicker({ defaultDate }: { defaultDate?: Date }) {
                        bg-neutral-900 text-neutral-100
                        border-neutral-700 hover:bg-neutral-800 hover:text-neutral-100"
           >
-            {date ? date.toLocaleDateString() : "Select date"}
+            {value ? value.toLocaleDateString() : "Select date"}
             <ChevronDownIcon />
           </Button>
         </PopoverTrigger>
@@ -50,10 +51,10 @@ export default function DatePicker({ defaultDate }: { defaultDate?: Date }) {
         >
           <Calendar
             mode="single"
-            selected={date}
+            selected={value}
             onSelect={(d) => {
               if (!d) return;
-              setDate(d);
+              onChange(d);
               setOpen(false);
             }}
             captionLayout="dropdown"
@@ -76,17 +77,6 @@ export default function DatePicker({ defaultDate }: { defaultDate?: Date }) {
           />
         </PopoverContent>
       </Popover>
-      <input
-        type="hidden"
-        name="date"
-        value={
-          date
-            ? date.toLocaleDateString("en-CA")
-            : defaultDate
-            ? defaultDate.toLocaleDateString("en-CA")
-            : ""
-        }
-      />
     </div>
   );
 }

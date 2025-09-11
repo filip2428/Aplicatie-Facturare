@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { createUser, editUser, deleteUser } from "@/server/user.service";
+import { createUser, editUser, deleteUser } from "@/server/users/user.service";
 import {
   CreateUserSchema,
   EditUserSchema,
   DeleteUserSchema,
-} from "@/server/user.schemas";
+} from "@/server/users/user.schemas";
 
 export async function POST(request: Request) {
   try {

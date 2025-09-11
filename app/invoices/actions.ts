@@ -47,51 +47,45 @@ export async function createInvoice(
   redirect("/invoices");
 }
 
-export async function deleteInvoice(invoiceId: string) {
-  await prisma.invoice.delete({ where: { id: invoiceId } });
-  revalidatePath("/invoices");
-  redirect("/invoices/list");
-}
+// export async function editInvoice(
+//   _prevState: EditInvoiceState,
+//   data: FormData
+// ) {
+//   try {
+//     const total = parseFloat(String(data.get("total") ?? "").trim());
+//     const dueDate = String(data.get("date") ?? "").trim();
 
-export async function editInvoice(
-  _prevState: EditInvoiceState,
-  data: FormData
-) {
-  try {
-    const total = parseFloat(String(data.get("total") ?? "").trim());
-    const dueDate = String(data.get("date") ?? "").trim();
+//     if (!total || !dueDate) {
+//       throw new Error("All fields are required.");
+//     }
+//     if (total <= 0) {
+//       throw new Error("Amount must be a positive number.");
+//     }
+//     if (isNaN(total)) {
+//       throw new Error("Amount must be a valid number.");
+//     }
 
-    if (!total || !dueDate) {
-      throw new Error("All fields are required.");
-    }
-    if (total <= 0) {
-      throw new Error("Amount must be a positive number.");
-    }
-    if (isNaN(total)) {
-      throw new Error("Amount must be a valid number.");
-    }
-
-    const invoice = await prisma.invoice.findUnique({
-      where: { id: String(data.get("id") ?? "").trim() },
-    });
-    if (!invoice) throw new Error("Invoice not found.");
-    await prisma.invoice.update({
-      where: { id: String(data.get("id") ?? "").trim() },
-      data: {
-        total,
-        dueDate: new Date(dueDate),
-        status:
-          invoice.amountPaid === total
-            ? "PAID"
-            : invoice.amountPaid > 0
-            ? "PARTIALLY_PAID"
-            : "UNPAID",
-      },
-    });
-    revalidatePath("/invoices");
-    return { ok: true };
-  } catch (error) {
-    return { error: `Something went wrong. Please try again. ${error}` };
-  }
-  //   redirect("/invoices/list");
-}
+//     const invoice = await prisma.invoice.findUnique({
+//       where: { id: String(data.get("id") ?? "").trim() },
+//     });
+//     if (!invoice) throw new Error("Invoice not found.");
+//     await prisma.invoice.update({
+//       where: { id: String(data.get("id") ?? "").trim() },
+//       data: {
+//         total,
+//         dueDate: new Date(dueDate),
+//         status:
+//           invoice.amountPaid === total
+//             ? "PAID"
+//             : invoice.amountPaid > 0
+//             ? "PARTIALLY_PAID"
+//             : "UNPAID",
+//       },
+//     });
+//     revalidatePath("/invoices");
+//     return { ok: true };
+//   } catch (error) {
+//     return { error: `Something went wrong. Please try again. ${error}` };
+//   }
+//   //   redirect("/invoices/list");
+// }

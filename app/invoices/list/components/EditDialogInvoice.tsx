@@ -13,17 +13,16 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useEffect, useState, useActionState } from "react";
-import { editInvoice, EditInvoiceState } from "../../actions";
+import { useState } from "react";
 import DatePicker from "../../../../components/DatePicker";
+import { useRouter } from "next/navigation";
+import { apiEditInvoice } from "@/lib/api/invoices";
 
 type EditDialogProps = {
   invoiceId: string;
   invoiceTotal: number;
   invoiceDueDate: Date;
 };
-
-const initialState: EditInvoiceState = { error: undefined, ok: false };
 
 function EditForm({
   invoiceId,
@@ -36,18 +35,33 @@ function EditForm({
   invoiceDueDate: Date;
   onSuccess: () => void;
 }) {
-  const [state, formAction, isPending] = useActionState<
-    EditInvoiceState,
-    FormData
-  >(editInvoice, initialState);
+  const router = useRouter();
+  const [total, setTotal] = useState(invoiceTotal);
+  const [dueDate, setDueDate] = useState(invoiceDueDate);
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (state.ok) onSuccess();
-  }, [state.ok, onSuccess]);
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setIsPending(true);
 
+    const res = await apiEditInvoice({
+      id: invoiceId,
+      total: total,
+      dueDate: dueDate,
+    });
+    setIsPending(false);
+    if (!res.ok) {
+      setError(res.error || "An error occurred");
+      return;
+    }
+    router.refresh();
+    router.push("/invoices/list");
+    onSuccess();
+  }
   return (
     <>
-      <form action={formAction} className="mt-4">
+      <form onSubmit={onSubmit} className="mt-4">
         <div className="grid gap-4">
           <input type="hidden" name="id" value={invoiceId} />
           <div className="grid gap-3">
@@ -58,12 +72,17 @@ function EditForm({
               type="number"
               defaultValue={invoiceTotal}
               min={0}
+              onChange={(e) => setTotal(Number(e.target.value))}
               required
             />
           </div>
           <div className="grid gap-3">
             <Label htmlFor="username-1">Invoice Due Date</Label>
-            <DatePicker defaultDate={invoiceDueDate} />
+            <DatePicker
+              defaultDate={invoiceDueDate}
+              value={dueDate}
+              onChange={setDueDate}
+            />
           </div>
         </div>
         <DialogFooter>
@@ -86,10 +105,8 @@ function EditForm({
           </Button>
         </DialogFooter>
       </form>
-      {state.error && (
-        <p className="text-center text-red-500 font-semibold mt-4">
-          {state.error}
-        </p>
+      {error && (
+        <p className="text-center text-red-500 font-semibold mt-4">{error}</p>
       )}
     </>
   );
