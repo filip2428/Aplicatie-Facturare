@@ -21,8 +21,11 @@ export default async function PaymentsPage() {
       number: true,
       total: true,
       customerId: true,
-      amountPaid: true,
     },
+  });
+  const payments = await prisma.payments.findMany({
+    orderBy: { createdAt: "desc" },
+    select: { id: true, amount: true, invoiceId: true, createdAt: true },
   });
 
   return (
@@ -31,7 +34,11 @@ export default async function PaymentsPage() {
       <h1 className="text-center text-4xl font-extrabold tracking-tight py-10">
         Payments Page
       </h1>
-      <PaymentsClient customers={customers} invoices={invoices} />
+      <PaymentsClient
+        customers={customers}
+        invoices={invoices}
+        payments={payments}
+      />
     </>
   );
 }

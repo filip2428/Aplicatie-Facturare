@@ -14,8 +14,8 @@ import { prisma } from "@/lib/prisma";
 export async function SectionCards() {
   const totalCustomers = await prisma.customer.count();
   const totalUsers = await prisma.user.count();
-  const totalAmountPaid = await prisma.invoice.aggregate({
-    _sum: { amountPaid: true },
+  const totalAmountPaid = await prisma.payments.aggregate({
+    _sum: { amount: true },
   });
   const totalAmountIssued = await prisma.invoice.aggregate({
     _sum: { total: true },
@@ -40,7 +40,7 @@ export async function SectionCards() {
             Total Amount Paid Using EasyInvoice
           </CardDescription>
           <CardTitle className="text-3xl font-bold mt-2 text-white">
-            {totalAmountPaid._sum.amountPaid ?? 0}{" "}
+            {totalAmountPaid._sum.amount ?? 0}{" "}
             <span className="text-red-500">RON</span>
           </CardTitle>
         </CardHeader>

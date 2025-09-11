@@ -9,12 +9,16 @@ export async function payInvoice(formData: FormData) {
   const amount = parseFloat(String(formData.get("amount")));
   if (!invoiceId) return;
 
+  await prisma.payments.create({
+    data: {
+      amount,
+      invoiceId,
+    },
+  });
+
   await prisma.invoice.update({
     where: { id: invoiceId },
     data: {
-      amountPaid: {
-        increment: amount,
-      },
       status: "PAID",
     },
   });
@@ -47,13 +51,23 @@ export async function partialPayInvoice(
     if (amount > invoice.total - (invoice.amountPaid ?? 0)) {
       throw new Error("Amount exceeds the remaining balance.");
     }
+    const amountPaid = await prisma.payments.aggregate({
+      _sum: { amount: true },
+      where: { invoiceId },
+    });
     const status =
-      (invoice.amountPaid ?? 0) + amount >= invoice.total
+      (amountPaid._sum.amount ?? 0) + amount >= invoice.total
         ? "PAID"
         : "PARTIALLY_PAID";
+    await prisma.payments.create({
+      data: {
+        amount,
+        invoiceId,
+      },
+    });
     await prisma.invoice.update({
       where: { id: invoiceId },
-      data: { amountPaid: { increment: amount }, status },
+      data: { status },
     });
     revalidatePath("/payments");
     return { ok: true };
