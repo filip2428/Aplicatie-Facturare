@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Header from "@/components/Header";
-import ListItems from "@/components/ListItems";
+import ListItems from "@/app/users/list/components/ListItems";
 import SortForm from "@/components/SortForm";
 
 type Search = {

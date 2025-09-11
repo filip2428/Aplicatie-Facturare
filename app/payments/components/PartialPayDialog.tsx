@@ -14,10 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState, useActionState } from "react";
-import {
-  partialPayInvoice,
-  PartialPayInvoiceState,
-} from "../app/payments/actions";
+import { partialPayInvoice, PartialPayInvoiceState } from "../actions";
 
 type PartialPayDialogProps = {
   formId?: string;

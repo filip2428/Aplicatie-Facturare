@@ -14,8 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState, useActionState } from "react";
-import { editInvoice, EditInvoiceState } from "../app/invoices/actions";
-import DatePicker from "./DatePicker";
+import { editInvoice, EditInvoiceState } from "../../actions";
+import DatePicker from "../../../../components/DatePicker";
 
 type EditDialogProps = {
   invoiceId: string;

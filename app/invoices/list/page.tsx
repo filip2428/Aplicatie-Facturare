@@ -3,8 +3,8 @@ import Header from "@/components/Header";
 import { deleteInvoice } from "../actions";
 import DeleteDialog from "@/components/DeleteDialog";
 import { ScrollBar, ScrollArea } from "@/components/ui/scroll-area";
-import SortInvoiceForm from "@/components/SortInvoicesForm";
-import EditDialogInvoice from "@/components/EditDialogInvoice";
+import SortInvoiceForm from "@/app/invoices/list/components/SortInvoicesForm";
+import EditDialogInvoice from "@/app/invoices/list/components/EditDialogInvoice";
 
 type Search = {
   q?: string;

@@ -2,7 +2,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import LoginForm from "@/components/LoginForm";
+import LoginForm from "@/app/login/components/LoginForm";
 
 type SP = Promise<{
   error?: string | string[];

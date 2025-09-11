@@ -1,6 +1,6 @@
-import { deleteUser } from "../app/users/actions";
+import { deleteUser } from "../../actions";
 import DeleteDialog from "@/components/DeleteDialog";
-import EditDialog from "@/components/EditDialog";
+import EditDialog from "@/app/users/list/components/EditDialog";
 import { ScrollBar, ScrollArea } from "@/components/ui/scroll-area";
 import type { User } from "@prisma/client";
 

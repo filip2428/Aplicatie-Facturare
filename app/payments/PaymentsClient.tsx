@@ -2,9 +2,9 @@
 
 import SelectClient from "@/components/SelectClient";
 import { useState } from "react";
-import PayDialog from "@/components/PayDialog";
+import PayDialog from "@/app/payments/components/PayDialog";
 import { payInvoice } from "./actions";
-import PartialPayDialog from "@/components/PartialPayDialog";
+import PartialPayDialog from "@/app/payments/components/PartialPayDialog";
 
 export default function PaymentsClient({
   customers,

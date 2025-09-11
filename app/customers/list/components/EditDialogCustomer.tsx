@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState, useActionState } from "react";
-import { editCustomer, EditCustomerState } from "../app/customers/actions";
+import { editCustomer, EditCustomerState } from "../../actions";
 
 type EditDialogProps = {
   formId?: string;

@@ -2,8 +2,7 @@ import Header from "../components/Header";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import Dashboard from "@/components/Dashboard";
-import { SectionCards } from "@/components/section-cards";
+import { SectionCards } from "@/app/Components/section-cards";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
