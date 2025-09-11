@@ -1,4 +1,3 @@
-import { deleteUser } from "../../actions";
 import DeleteDialog from "@/components/DeleteDialog";
 import EditDialog from "@/app/users/list/components/EditDialog";
 import { ScrollBar, ScrollArea } from "@/components/ui/scroll-area";
@@ -29,14 +28,7 @@ export default function ListItems({ users }: ListItemsProps) {
                   userId={user.id ?? ""}
                   key={`edit-${user.id}`}
                 />
-                <form
-                  action={deleteUser.bind(null, user.id)}
-                  id={`delete-user-form-${user.id}`}
-                />
-                <DeleteDialog
-                  formId={`delete-user-form-${user.id}`}
-                  inputType="User"
-                />
+                <DeleteDialog itemId={user.id} inputType="User" />
               </div>
             </li>
           ))}

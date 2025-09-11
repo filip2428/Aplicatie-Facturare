@@ -11,21 +11,31 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
+import { apiDeleteUser } from "@/lib/api/users";
 
 type DeleteDialogProps = {
-  formId?: string;
+  itemId?: string;
   inputType?: "User" | "Customer" | "Invoice";
 };
 
 export default function DeleteDialog({
-  formId,
+  itemId,
   inputType = "User",
 }: DeleteDialogProps) {
-  const handleConfirm = () => {
-    if (!formId) return;
-    const form = document.getElementById(formId) as HTMLFormElement | null;
-    form?.requestSubmit();
-  };
+  const router = useRouter();
+
+  async function handleConfirm() {
+    if (inputType === "User") {
+      if (!itemId) return;
+      const res = await apiDeleteUser({ id: itemId });
+      if (!res.ok) {
+        return;
+      }
+      router.refresh();
+      router.push(`/users/list`);
+    }
+  }
   return (
     <Dialog>
       <DialogTrigger asChild>

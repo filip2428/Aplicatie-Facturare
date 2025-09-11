@@ -13,8 +13,10 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useEffect, useState, useActionState } from "react";
-import { editUser, EditUserState } from "../../actions";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { apiEditUser } from "@/lib/api/users";
+// import { editUser, EditUserState } from "../../actions";
 
 type EditDialogProps = {
   formId?: string;
@@ -23,7 +25,7 @@ type EditDialogProps = {
   userId: string;
 };
 
-const initialState: EditUserState = { error: undefined, ok: false };
+// const initialState: EditUserState = { error: undefined, ok: false };
 
 function EditForm({
   userId,
@@ -36,23 +38,44 @@ function EditForm({
   userEmail: string;
   onSuccess: () => void;
 }) {
-  const [state, formAction, isPending] = useActionState<
-    EditUserState,
-    FormData
-  >(editUser, initialState);
+  const router = useRouter();
+  const [name, setName] = useState(userName);
+  const [email, setEmail] = useState(userEmail);
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (state.ok) onSuccess();
-  }, [state.ok, onSuccess]);
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setIsPending(true);
 
+    const res = await apiEditUser({
+      id: userId,
+      name: name.trim(),
+      email: email.trim(),
+    });
+    setIsPending(false);
+    if (!res.ok) {
+      setError(res.error || "An error occurred");
+      return;
+    }
+    router.refresh();
+    router.push("/users/list");
+    onSuccess();
+  }
   return (
     <>
-      <form action={formAction} className="mt-4">
+      <form onSubmit={onSubmit} className="mt-4">
         <div className="grid gap-4">
           <input type="hidden" name="id" value={userId} />
           <div className="grid gap-3">
             <Label htmlFor="name-1">Name</Label>
-            <Input id="name-1" name="name" defaultValue={userName} required />
+            <Input
+              id="name-1"
+              name="name"
+              defaultValue={userName}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
           </div>
           <div className="grid gap-3">
             <Label htmlFor="username-1">Email</Label>
@@ -60,6 +83,7 @@ function EditForm({
               id="username-1"
               name="email"
               defaultValue={userEmail}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
@@ -84,10 +108,8 @@ function EditForm({
           </Button>
         </DialogFooter>
       </form>
-      {state.error && (
-        <p className="text-center text-red-500 font-semibold mt-4">
-          {state.error}
-        </p>
+      {error && (
+        <p className="text-center text-red-500 font-semibold mt-4">{error}</p>
       )}
     </>
   );
