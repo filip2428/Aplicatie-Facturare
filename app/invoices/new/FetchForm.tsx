@@ -1,21 +1,24 @@
 "use client";
 
-import { createInvoice, type CreateInvoiceState } from "../actions";
-import { useActionState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { XCircle, AlertTriangle, X, CheckCircle2Icon } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 
-export default function FetchForm({ children }: { children: React.ReactNode }) {
-  const [state, formAction, isPending] = useActionState<
-    CreateInvoiceState,
-    FormData
-  >(createInvoice, {});
-
+export default function FetchForm({
+  children,
+  onSubmit,
+  isPending,
+  error,
+}: {
+  children: React.ReactNode;
+  isPending: boolean;
+  error: string;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void | Promise<void>;
+}) {
   return (
     <>
       <form
         className="text-center space-y-4 max-w-md mx-auto p-6 bg-neutral-800/60 rounded-xl"
-        action={formAction}
+        onSubmit={onSubmit}
       >
         {children}
         <div className="text-right">
@@ -31,7 +34,7 @@ export default function FetchForm({ children }: { children: React.ReactNode }) {
           </button>
         </div>
       </form>
-      {state.error && (
+      {error && (
         <div className="fixed left-1/2 bottom-16 z-50 translate-x-[-50%]">
           <Alert
             variant="destructive"
@@ -48,7 +51,7 @@ export default function FetchForm({ children }: { children: React.ReactNode }) {
             <div>
               <AlertTitle className="text-red-100">Heads up!</AlertTitle>
               <AlertDescription className="text-red-200/90">
-                {state.error}
+                {error}
               </AlertDescription>
             </div>
           </Alert>

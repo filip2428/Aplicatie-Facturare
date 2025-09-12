@@ -13,8 +13,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useEffect, useState, useActionState } from "react";
-import { editCustomer, EditCustomerState } from "../../actions";
+import { useState } from "react";
+import { apiEditCustomer } from "@/lib/api/customers";
+import { useRouter } from "next/navigation";
 
 type EditDialogProps = {
   formId?: string;
@@ -25,8 +26,6 @@ type EditDialogProps = {
   customerAddress: string;
   customerCif: string;
 };
-
-const initialState: EditCustomerState = { error: undefined, ok: false };
 
 function EditForm({
   customerId,
@@ -45,18 +44,39 @@ function EditForm({
   customerCif: string;
   onSuccess: () => void;
 }) {
-  const [state, formAction, isPending] = useActionState<
-    EditCustomerState,
-    FormData
-  >(editCustomer, initialState);
+  const router = useRouter();
+  const [name, setName] = useState(customerName);
+  const [email, setEmail] = useState(customerEmail);
+  const [phone, setPhone] = useState(customerPhone);
+  const [address, setAddress] = useState(customerAddress);
+  const [cif, setCif] = useState(customerCif);
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (state.ok) onSuccess();
-  }, [state.ok, onSuccess]);
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsPending(true);
+    const res = await apiEditCustomer({
+      id: customerId,
+      name,
+      email,
+      phone,
+      address,
+      cif,
+    });
+    setIsPending(false);
+    if (!res.ok) {
+      setError(res.error || "An error occurred");
+      return;
+    }
+    router.refresh();
+    router.push("/customers/list");
+    onSuccess();
+  }
 
   return (
     <>
-      <form action={formAction} className="mt-4">
+      <form onSubmit={onSubmit} className="mt-4">
         <div className="grid gap-4">
           <input type="hidden" name="id" value={customerId} />
           <div className="grid gap-3">
@@ -65,6 +85,7 @@ function EditForm({
               id="name-1"
               name="name"
               defaultValue={customerName}
+              onChange={(e) => setName(e.target.value)}
               required
             />
           </div>
@@ -74,6 +95,7 @@ function EditForm({
               id="username-1"
               name="email"
               defaultValue={customerEmail}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
@@ -83,6 +105,7 @@ function EditForm({
               id="username-1"
               name="phone"
               defaultValue={customerPhone}
+              onChange={(e) => setPhone(e.target.value)}
               required
             />
           </div>
@@ -92,6 +115,7 @@ function EditForm({
               id="username-1"
               name="address"
               defaultValue={customerAddress}
+              onChange={(e) => setAddress(e.target.value)}
               required
             />
           </div>
@@ -101,6 +125,7 @@ function EditForm({
               id="username-1"
               name="cif"
               defaultValue={customerCif}
+              onChange={(e) => setCif(e.target.value)}
               required
             />
           </div>
@@ -125,10 +150,8 @@ function EditForm({
           </Button>
         </DialogFooter>
       </form>
-      {state.error && (
-        <p className="text-center text-red-500 font-semibold mt-4">
-          {state.error}
-        </p>
+      {error && (
+        <p className="text-center text-red-500 font-semibold mt-4">{error}</p>
       )}
     </>
   );

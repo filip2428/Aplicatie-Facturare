@@ -48,9 +48,9 @@ export async function partialPayInvoice(
     if (isNaN(amount)) {
       throw new Error("Amount must be a valid number.");
     }
-    if (amount > invoice.total - (invoice.amountPaid ?? 0)) {
-      throw new Error("Amount exceeds the remaining balance.");
-    }
+    // if (amount > invoice.total - (invoice.amountPaid ?? 0)) {
+    //   throw new Error("Amount exceeds the remaining balance.");
+    // }
     const amountPaid = await prisma.payments.aggregate({
       _sum: { amount: true },
       where: { invoiceId },

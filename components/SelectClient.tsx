@@ -10,12 +10,19 @@ import {
 export default function SelectClient({
   customers,
   onChange,
+  selectedCustomer,
 }: {
   customers: Array<{ id: string; name: string; email: string }>;
-  onChange?: (customerId: string) => void;
+  onChange: (customerId: string) => void;
+  selectedCustomer: string | null;
 }) {
   return (
-    <Select name="customer" required onValueChange={onChange}>
+    <Select
+      name="customer"
+      required
+      onValueChange={(val) => onChange(val)}
+      value={selectedCustomer ?? undefined}
+    >
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="Select a customer" />
       </SelectTrigger>

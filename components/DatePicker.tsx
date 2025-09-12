@@ -28,6 +28,13 @@ export default function DatePicker({ defaultDate, value, onChange }: Props) {
     today.getDate() + 1
   );
 
+  function formatDDMMYYYY(d: Date) {
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const yyyy = d.getFullYear();
+    return `${dd}.${mm}.${yyyy}`;
+  }
+
   return (
     <div className="flex flex-col gap-3">
       <Popover open={open} onOpenChange={setOpen}>
@@ -39,7 +46,7 @@ export default function DatePicker({ defaultDate, value, onChange }: Props) {
                        bg-neutral-900 text-neutral-100
                        border-neutral-700 hover:bg-neutral-800 hover:text-neutral-100"
           >
-            {value ? value.toLocaleDateString() : "Select date"}
+            {value ? formatDDMMYYYY(value) : "Select date"}
             <ChevronDownIcon />
           </Button>
         </PopoverTrigger>

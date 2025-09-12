@@ -2,16 +2,41 @@
 
 import Header from "@/components/Header";
 import { Input } from "@/components/ui/input";
-import { useActionState } from "react";
-import { createCustomer, type CreateCustomerState } from "../actions";
+import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { apiCreateCustomer } from "@/lib/api/customers";
 
 export default function CustomersNewPage() {
-  const [state, formAction, isPending] = useActionState<
-    CreateCustomerState,
-    FormData
-  >(createCustomer, {});
+  const router = useRouter();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [cif, setCif] = useState("");
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsPending(true);
+    const result = await apiCreateCustomer({
+      name,
+      email,
+      phone,
+      address,
+      cif,
+    });
+    setIsPending(false);
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
+    router.refresh();
+    router.push("/customers");
+  }
+
   return (
     <>
       <Header />
@@ -19,7 +44,7 @@ export default function CustomersNewPage() {
         Create New Customer
       </h1>
       <form
-        action={formAction}
+        onSubmit={onSubmit}
         className="text-center space-y-4 max-w-md mx-auto p-6 bg-neutral-800/60 rounded-xl"
       >
         <label className="block text-left">
@@ -29,6 +54,7 @@ export default function CustomersNewPage() {
             placeholder="Name / Company"
             type="text"
             className="mt-2"
+            onChange={(e) => setName(e.target.value)}
             required
           />
         </label>
@@ -39,6 +65,7 @@ export default function CustomersNewPage() {
             placeholder="xyz@email.com"
             type="email"
             className="mt-2"
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
         </label>
@@ -49,6 +76,7 @@ export default function CustomersNewPage() {
             placeholder="e.g. +40712345678"
             type="tel"
             className="mt-2"
+            onChange={(e) => setPhone(e.target.value)}
             required
           />
         </label>
@@ -59,6 +87,7 @@ export default function CustomersNewPage() {
             placeholder="e.g. Street 123, City"
             type="text"
             className="mt-2"
+            onChange={(e) => setAddress(e.target.value)}
             required
           />
         </label>
@@ -69,6 +98,7 @@ export default function CustomersNewPage() {
             placeholder="Ro 123456"
             type="text"
             className="mt-2"
+            onChange={(e) => setCif(e.target.value)}
             required
           />
         </label>
@@ -84,7 +114,7 @@ export default function CustomersNewPage() {
           </button>
         </div>
       </form>
-      {state.error && (
+      {error && (
         <div className="fixed left-1/2 bottom-16 z-50 translate-x-[-50%]">
           <Alert
             variant="destructive"
@@ -101,7 +131,7 @@ export default function CustomersNewPage() {
             <div>
               <AlertTitle className="text-red-100">Heads up!</AlertTitle>
               <AlertDescription className="text-red-200/90">
-                {state.error}
+                {error}
               </AlertDescription>
             </div>
           </Alert>
