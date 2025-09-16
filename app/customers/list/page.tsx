@@ -1,9 +1,9 @@
-import { prisma } from "@/lib/prisma";
 import Header from "@/components/Header";
 import DeleteDialog from "@/components/DeleteDialog";
 import EditDialogCustomer from "@/app/customers/list/components/EditDialogCustomer";
 import { ScrollBar, ScrollArea } from "@/components/ui/scroll-area";
 import SortForm from "@/components/SortForm";
+import { apiGetCustomers } from "@/lib/api/customers";
 
 type Search = {
   q?: string;
@@ -13,33 +13,18 @@ type Search = {
 export default async function UsersPage({
   searchParams,
 }: {
-  searchParams: Promise<Search>;
+  searchParams: Search;
 }) {
-  const params = await searchParams;
+  const params = searchParams;
 
   const q = (params.q ?? "").trim();
   const sort = (params.sort ?? "newest") as Search["sort"];
-  const where = q
-    ? {
-        OR: [
-          { name: { startsWith: q, mode: "insensitive" as const } },
-          { email: { startsWith: q, mode: "insensitive" as const } },
-        ],
-      }
-    : undefined;
 
-  const orderBy =
-    sort === "oldest"
-      ? { createdAt: "asc" as const }
-      : sort === "newest"
-      ? { createdAt: "desc" as const }
-      : sort === "az"
-      ? [{ name: "asc" as const }, { email: "asc" as const }]
-      : sort === "za"
-      ? [{ name: "desc" as const }, { email: "desc" as const }]
-      : { createdAt: "desc" as const };
-
-  const customers = await prisma.customer.findMany({ where, orderBy });
+  const res = await apiGetCustomers({ q, sort });
+  if (!res.ok) {
+    throw new Error(res.error);
+  }
+  const { customers } = res;
 
   return (
     <>

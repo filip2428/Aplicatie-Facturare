@@ -78,3 +78,30 @@ export async function editCustomer(input: {
     };
   }
 }
+
+export function buildWhere(q?: string) {
+  if (!q) return undefined;
+  const s = q.trim();
+  if (!s) return undefined;
+  return {
+    OR: [
+      { name: { startsWith: s, mode: "insensitive" as const } },
+      { email: { startsWith: s, mode: "insensitive" as const } },
+    ],
+  };
+}
+
+export function buildOrderBy(sort?: string) {
+  switch (sort) {
+    case "oldest":
+      return { createdAt: "asc" as const };
+    case "newest":
+      return { createdAt: "desc" as const };
+    case "az":
+      return [{ name: "asc" as const }, { email: "asc" as const }];
+    case "za":
+      return [{ name: "desc" as const }, { email: "desc" as const }];
+    default:
+      return { createdAt: "desc" as const };
+  }
+}

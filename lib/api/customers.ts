@@ -54,3 +54,40 @@ export async function apiEditCustomer(input: {
   });
   return response.json();
 }
+
+export type GetCustomersResponse =
+  | {
+      ok: true;
+      customers: Array<{
+        id: string;
+        name: string | null;
+        email: string | null;
+        phone: string | null;
+        address: string | null;
+        cif: string | null;
+      }>;
+    }
+  | { ok: false; error: string };
+
+export async function apiGetCustomers(params?: {
+  q?: string;
+  sort?: "newest" | "oldest" | "az" | "za";
+}): Promise<GetCustomersResponse> {
+  const qs = new URLSearchParams();
+  if (params?.q) qs.set("q", params.q);
+  if (params?.sort) qs.set("sort", params.sort);
+
+  const isServer = typeof window === "undefined";
+  const base = isServer
+    ? process.env.NEXT_PUBLIC_APP_URL ??
+      `http://localhost:${process.env.PORT ?? 3000}`
+    : "";
+
+  const res = await fetch(`${base}/api/customers?${qs.toString()}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    cache: "no-store",
+  });
+
+  return res.json();
+}
