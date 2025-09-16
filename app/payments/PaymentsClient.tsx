@@ -32,7 +32,11 @@ export default function PaymentsClient({
       <div className="space-y-6 w-3xl mx-auto">
         <label className="block text-left">
           Customer:
-          <SelectClient customers={customers} onChange={setSelectedCustomer} />
+          <SelectClient
+            customers={customers}
+            onChange={setSelectedCustomer}
+            selectedCustomer={selectedCustomer}
+          />
         </label>
         {selectedCustomer && (
           <ul className="space-y-2">

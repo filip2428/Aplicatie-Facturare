@@ -60,6 +60,10 @@ export default async function UsersPage({
               });
               const today = new Date();
               const dueDate = invoice.dueDate;
+              const amountPaid = await prisma.payments.aggregate({
+                _sum: { amount: true },
+                where: { invoiceId: invoice.id },
+              });
               let dueColor = "text-green-400";
               if (dueDate < today) {
                 dueColor = "text-red-500";
@@ -90,8 +94,10 @@ export default async function UsersPage({
                     </div>
                     <div className="text-sm text-gray-300">
                       {invoice.total} | {invoice.status}{" "}
-                      {invoice.amountPaid ? `- ${invoice.amountPaid}` : ""} |
-                      {" Due: "}
+                      {amountPaid._sum.amount
+                        ? `- ${amountPaid._sum.amount}`
+                        : ""}{" "}
+                      |{" Due: "}
                       <span className={dueColor}>
                         {invoice.dueDate.toDateString()}
                       </span>
