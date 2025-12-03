@@ -105,13 +105,15 @@ export default async function UsersPage({
                   </div>
                   <div className="flex space-x-2">
                     {invoice.status === "UNPAID" && (
-                      <EditDialogInvoice
-                        invoiceId={invoice.id}
-                        invoiceTotal={invoice.total}
-                        invoiceDueDate={invoice.dueDate}
-                      />
+                      <>
+                        <EditDialogInvoice
+                          invoiceId={invoice.id}
+                          invoiceTotal={invoice.total}
+                          invoiceDueDate={invoice.dueDate}
+                        />
+                        <DeleteDialog inputType="Invoice" itemId={invoice.id} />
+                      </>
                     )}
-                    <DeleteDialog inputType="Invoice" itemId={invoice.id} />
                   </div>
                 </li>
               );

@@ -34,7 +34,7 @@ export default function Header() {
         </Link>
 
         <nav className="flex items-center gap-6 text-xl py-2">
-          <ActiveLink href="/users">Users</ActiveLink>
+          {/* <ActiveLink href="/users">Users</ActiveLink> */}
           <ActiveLink href="/customers">Customers</ActiveLink>
           <ActiveLink href="/invoices">Invoices</ActiveLink>
           <ActiveLink href="/payments">Payments</ActiveLink>
