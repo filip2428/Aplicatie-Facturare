@@ -1,10 +1,25 @@
 "use server";
 
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { prisma } from "@/lib/prisma";
 
-export async function askGemini(question: string) {
+// Definim tipul mesajului pentru a fi siguri pe date
+type Message = {
+  role: "user" | "ai";
+  content: string;
+};
+
+export async function askGemini(history: Message[]) {
   try {
-    // 1. Luăm datele din baza de date
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) return { ok: false, answer: "Lipsește cheia API." };
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+    // const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" })
+    // const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+    // 1. Luăm datele din DB
     const customers = await prisma.customer.findMany({
       select: { name: true, cif: true, email: true },
     });
@@ -19,52 +34,63 @@ export async function askGemini(question: string) {
       },
     });
 
-    // 2. Pregătim contextul pentru AI
+    // 2. Extragem ultima întrebare a utilizatorului
+    const lastMessage = history[history.length - 1];
+    const question = lastMessage.content;
+
+    // 3. Construim "Istoricul" ca text pentru a-l da AI-ului
+    // Luăm doar ultimele 10 mesaje ca să nu încărcăm memoria inutil
+    const recentHistory = history.slice(-10);
+    const conversationString = recentHistory
+      .map(
+        (msg) =>
+          `${msg.role === "user" ? "Utilizator" : "Asistent"}: ${msg.content}`,
+      )
+      .join("\n");
+
     const dataContext = JSON.stringify({ customers, invoices }, null, 2);
 
-    // Promptul sistemului
+    const today = new Date().toLocaleDateString("ro-RO", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    // 4. Prompt-ul devine "Sistem + Istoric + Date"
     const prompt = `
-      Ești un asistent financiar.
-      Ai acces la aceste date din baza de date:
+      Ești un asistent financiar capabil să rețină contextul conversației.
+      
+      DATE DIN BAZA DE DATE:
       ${dataContext}
+
+      ISTORICUL CONVERSAȚIEI (folosește-l pentru context):
+      ${conversationString}
+
+      DATA AZI: ${today}
+
+      Rolul tău nu e doar să cauți date, ci să analizezi sănătatea financiară.
+  Dacă un client are multe facturi neplătite vechi, marchează-l ca "Riscant".
+  Dacă încasările scad, avertizează utilizatorul.
 
       Reguli:
       1. Răspunde scurt în română.
-      2. Folosește datele de mai sus pentru a răspunde.
-      
-      Întrebarea utilizatorului: "${question}"
+      2. Dacă utilizatorul se referă la "el", "ea", "ei", folosește istoricul pentru a înțelege despre cine e vorba.
+      3. Fii politicos și util.
+      4. Dacă nu știi răspunsul, spune "Nu știu".
+      5. Nu inventa informații.
+      6. Raspunde uman, nu robot.
+
+      Ultima întrebare a utilizatorului: "${question}"
     `;
 
-    // 3. Apelăm API-ul Google manual (fără bibliotecă)
-    const apiKey = process.env.GEMINI_API_KEY;
-    // Folosim modelul gemini-1.5-flash care e gratuit și rapid
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-      }),
-    });
-
-    if (!response.ok) {
-      // Dacă totuși dă eroare, vedem exact ce zice Google
-      const errorData = await response.json();
-      console.error("Gemini API Error:", JSON.stringify(errorData, null, 2));
-      return {
-        ok: false,
-        answer: "Eroare de configurare AI (API Key sau Model).",
-      };
-    }
-
-    const data = await response.json();
-    const text =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text || "Nu am răspuns.";
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
 
     return { ok: true, answer: text };
   } catch (error) {
-    console.error("Server Action Error:", error);
-    return { ok: false, answer: "Eroare internă server." };
+    console.error("Eroare AI:", error);
+    return { ok: false, answer: "Nu am putut procesa cererea." };
   }
 }
