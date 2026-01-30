@@ -38,6 +38,7 @@ export default function Header() {
           <ActiveLink href="/customers">Customers</ActiveLink>
           <ActiveLink href="/invoices">Invoices</ActiveLink>
           <ActiveLink href="/payments">Payments</ActiveLink>
+          <ActiveLink href="/chat">AI Assistant</ActiveLink>
 
           <div className="ml-6">
             {session ? (

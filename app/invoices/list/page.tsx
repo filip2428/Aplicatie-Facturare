@@ -4,6 +4,7 @@ import DeleteDialog from "@/components/DeleteDialog";
 import { ScrollBar, ScrollArea } from "@/components/ui/scroll-area";
 import SortInvoiceForm from "@/app/invoices/list/components/SortInvoicesForm";
 import EditDialogInvoice from "@/app/invoices/list/components/EditDialogInvoice";
+import CurrencyConverter from "@/components/CurrencyConverter";
 
 type Search = {
   q?: string;
@@ -24,16 +25,16 @@ export default async function UsersPage({
     sort === "oldest"
       ? { createdAt: "asc" as const }
       : sort === "newest"
-      ? { createdAt: "desc" as const }
-      : sort === "high"
-      ? [{ total: "desc" as const }]
-      : sort === "low"
-      ? [{ total: "asc" as const }]
-      : sort === "soonest"
-      ? [{ dueDate: "asc" as const }]
-      : sort === "late"
-      ? [{ dueDate: "desc" as const }]
-      : { createdAt: "desc" as const };
+        ? { createdAt: "desc" as const }
+        : sort === "high"
+          ? [{ total: "desc" as const }]
+          : sort === "low"
+            ? [{ total: "asc" as const }]
+            : sort === "soonest"
+              ? [{ dueDate: "asc" as const }]
+              : sort === "late"
+                ? [{ dueDate: "desc" as const }]
+                : { createdAt: "desc" as const };
 
   const invoices = await prisma.invoice.findMany({
     orderBy,
@@ -86,14 +87,14 @@ export default async function UsersPage({
                         invoice.status === "PAID"
                           ? "text-green-400"
                           : invoice.status === "PARTIALLY_PAID"
-                          ? "text-yellow-400"
-                          : "text-white"
+                            ? "text-yellow-400"
+                            : "text-white"
                       }`}
                     >
                       {customer?.name} | {invoice.number}
                     </div>
                     <div className="text-sm text-gray-300">
-                      {invoice.total} | {invoice.status}{" "}
+                      {invoice.total} RON | {invoice.status}{" "}
                       {amountPaid._sum.amount
                         ? `- ${amountPaid._sum.amount}`
                         : ""}{" "}
@@ -102,6 +103,7 @@ export default async function UsersPage({
                         {invoice.dueDate.toDateString()}
                       </span>
                     </div>
+                    <CurrencyConverter amountInRon={invoice.total} />
                   </div>
                   <div className="flex space-x-2">
                     {invoice.status === "UNPAID" && (
