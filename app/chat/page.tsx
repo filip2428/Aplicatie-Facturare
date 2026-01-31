@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { askGemini } from "@/app/actions/chat";
+import { askGemini } from "@/app/api/actions/chat";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -51,13 +51,11 @@ export default function ChatPage() {
     setMessages((prev) => [...prev, { role: "user", content: userMsg }]);
     setLoading(true);
 
-    // Construim noua listă de mesaje care include și întrebarea curentă
     const newHistory = [
       ...messages,
       { role: "user", content: userMsg } as Message,
     ];
 
-    // Trimitem TOATĂ istoria la server
     const res = await askGemini(newHistory);
 
     setLoading(false);
@@ -76,13 +74,10 @@ export default function ChatPage() {
   };
 
   return (
-    // FIX: h-screen și overflow-hidden pe containerul principal
-    // Asta previne scroll-ul paginii întregi. Doar chat-ul va avea scroll.
     <div className="flex flex-col h-screen overflow-hidden ">
       <Header />
 
       <main className="flex-1 flex justify-center items-center p-4">
-        {/* Card mai mic (max-w-2xl) și înălțime fixă rezonabilă (h-[600px]) */}
         <Card className="w-full max-w-2xl h-[600px] flex flex-col shadow-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
           <CardHeader className="border-b bg-slate-50/50 dark:bg-slate-900/50 px-6 py-4 shrink-0">
             <div className="flex items-center gap-3">
@@ -96,7 +91,6 @@ export default function ChatPage() {
             </div>
           </CardHeader>
 
-          {/* Zona de mesaje - Scroll nativ aici */}
           <CardContent className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/30 dark:bg-black/10">
             {messages.map((m, i) => (
               <div
@@ -154,7 +148,6 @@ export default function ChatPage() {
             <div ref={messagesEndRef} />
           </CardContent>
 
-          {/* Zona de input */}
           <div className="p-4 bg-background border-t shrink-0">
             <div className="flex gap-2">
               <Input

@@ -3,7 +3,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { prisma } from "@/lib/prisma";
 
-// Definim tipul mesajului pentru a fi siguri pe date
 type Message = {
   role: "user" | "ai";
   content: string;
@@ -16,8 +15,6 @@ export async function askGemini(history: Message[]) {
 
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
-    // const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" })
-    // const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     // 1. Luăm datele din DB
     const customers = await prisma.customer.findMany({
@@ -34,12 +31,9 @@ export async function askGemini(history: Message[]) {
       },
     });
 
-    // 2. Extragem ultima întrebare a utilizatorului
     const lastMessage = history[history.length - 1];
     const question = lastMessage.content;
 
-    // 3. Construim "Istoricul" ca text pentru a-l da AI-ului
-    // Luăm doar ultimele 10 mesaje ca să nu încărcăm memoria inutil
     const recentHistory = history.slice(-10);
     const conversationString = recentHistory
       .map(
@@ -57,7 +51,6 @@ export async function askGemini(history: Message[]) {
       day: "numeric",
     });
 
-    // 4. Prompt-ul devine "Sistem + Istoric + Date"
     const prompt = `
       Ești un asistent financiar capabil să rețină contextul conversației.
       
